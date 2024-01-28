@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<VBox prefHeight="118.0" prefWidth="322.0" xmlns="http://javafx.com/javafx/17.0.2-ea" xmlns:fx="http://javafx.com/fxml/1" fx:controller="com.example.srfront.ServerImp">
+   <Label prefHeight="17.0" prefWidth="201.0" text="Wynik" textAlignment="CENTER" />
+   <HBox prefHeight="100.0" prefWidth="200.0">
+      <children>
+          <TextArea fx:id="textOutcome" prefHeight="181.0" prefWidth="322.0" />
+      </children>
+   </HBox>
+</VBox>
