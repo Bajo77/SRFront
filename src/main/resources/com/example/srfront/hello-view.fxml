@@ -43,7 +43,7 @@
          </TextField>
       </children>
    </FlowPane>
-    <Button onAction="#onOdpalButtonClick" text="Uruchom" />
+   <Button onAction="#onOdpalButtonClick" text="Uruchom" />
    <Label text="Czy chcesz rozpocząć elekcję?" />
    <HBox prefHeight="100.0" prefWidth="200.0">
       <children>

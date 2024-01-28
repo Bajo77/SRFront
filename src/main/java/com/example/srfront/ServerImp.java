@@ -1,5 +1,9 @@
 package com.example.srfront;
 
+import javafx.application.Platform;
+import javafx.fxml.FXML;
+import javafx.scene.control.TextArea;
+
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
@@ -7,11 +11,13 @@ import java.util.HashMap;
 import java.util.Map;
 
 public class ServerImp extends UnicastRemoteObject implements TyranElection {
+    @FXML
+    private TextArea textOutcome;
     private final Map<String, Map<String, Integer>> nodes = new HashMap<>();
     private volatile int leaderId = -1;
     private volatile String leaderName = null;
 
-    protected ServerImp() throws RemoteException {
+    public ServerImp() throws RemoteException {
         super();
     }
 
@@ -33,7 +39,9 @@ public class ServerImp extends UnicastRemoteObject implements TyranElection {
 
         nodes.forEach((key, value) -> {
             System.out.println("Węzeł: " + key);
+            //textOutcome.appendText("Węzeł: " + key + "\n");
             value.forEach((nodeKey, nodeId) -> System.out.println(" - " + nodeKey + ": " + nodeId));
+            //value.forEach((nodeKey, nodeId) -> textOutcome.appendText(" - " + nodeKey + ": " + nodeId + "\n"));
         });
     }
 
@@ -75,6 +83,7 @@ public class ServerImp extends UnicastRemoteObject implements TyranElection {
 
             System.out.println("Wybrany lider to " + leaderName + " z ID: " + leaderId);
 
+            //textOutcome.appendText("Wybrany lider to " + leaderName + " z ID: " + leaderId + "\n");
         }
     }
 
@@ -94,7 +103,9 @@ public class ServerImp extends UnicastRemoteObject implements TyranElection {
             if (leaderName.equals(name) && nodes.size() > 1) {
                 printNodes();
                 System.out.println("Usunięto węzeł: " + name + ", który był obcenym liderem");
+                //textOutcome.appendText("Usunięto węzeł: " + name + ", który był obcenym liderem" + "\n");
                 System.out.println("Wybieranie nowego lidera!");
+                //textOutcome.appendText("Wybieranie nowego lidera!" + "\n");
                 startElection();
             }
         }
