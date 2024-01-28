@@ -1,11 +1,14 @@
 package com.example.srfront;
 
+import javafx.application.Platform;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.TextField;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
 import java.rmi.RemoteException;
+import java.util.Timer;
+import java.util.TimerTask;
 
 public class ClientController {
     String IP_Server;
@@ -37,9 +40,7 @@ public class ClientController {
             Nazwa = textNazwa.getText();
             ID = Integer.parseInt(textID.getText());
 
-
             final TyranElection[] stubContainer = new TyranElection[1];
-
 
             try {
                 Registry registry = LocateRegistry.getRegistry(IP_Server, Port);
@@ -58,21 +59,31 @@ public class ClientController {
                     }
                 }));
 
-                while (true) {
-                    try {
-                        if (stub.getNodesCount() >= 2) {
-                            buttonYES.setDisable(false);
-                            buttonNO.setDisable(false);
-                            if (StartElection) {
-                                System.out.println("Rozpoczęto elekcję.");
-                                stub.startElection();
+                Timer timer = new Timer();
+                timer.scheduleAtFixedRate(new TimerTask() {
+                    @Override
+                    public void run() {
+                        try {
+                            if (stubContainer[0].getNodesCount() >= 2) {
+                                Platform.runLater(() -> {
+                                    buttonYES.setDisable(false);
+                                    buttonNO.setDisable(false);
+                                    if (StartElection) {
+                                        try {
+                                            stubContainer[0].startElection();
+                                        } catch (RemoteException e) {
+                                            throw new RuntimeException(e);
+                                        }
+                                    }
+                                });
                             }
+                        } catch (RemoteException e) {
+                            System.err.println("Wystąpił błąd podczas wykonywania operacji: " + e.getMessage());
+                            this.cancel(); // Zatrzymaj timer
                         }
-                    } catch (RemoteException e) {
-                        System.err.println("Wystąpił błąd podczas wykonywania operacji: " + e.getMessage());
-                        break;
                     }
-                }
+                }, 0, 1000); // Sprawdza co sekundę
+
             } catch (Exception e) {
                 System.err.println("Błąd podczas łączenia z serwerem: " + e);
             }
