@@ -15,6 +15,10 @@ public class ClientApp extends Application {
         stage.setTitle("Client");
         stage.setScene(scene);
         stage.show();
+
+        stage.setOnCloseRequest(event -> {
+            System.exit(0);
+        });
     }
 
     public static void main(String[] args) {

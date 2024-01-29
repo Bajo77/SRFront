@@ -91,9 +91,10 @@ public class ServerImp extends UnicastRemoteObject implements TyranElection {
             nodes.remove(name);
             nodes.forEach((key, value) -> value.remove(name));
 
+            printNodes();
+            serverController.textOutcome.appendText("- " + formattedDateTime + " - Usunięto węzeł: " + name + "\n");
+
             if (leaderName.equals(name) && nodes.size() > 1) {
-                printNodes();
-                serverController.textOutcome.appendText("- " + formattedDateTime + " - Usunięto węzeł: " + name + ", który był obcenym liderem" + "\n");
                 serverController.textOutcome.appendText("- " + formattedDateTime + " - Wybieranie nowego lidera!" + "\n");
                 startElection();
             }

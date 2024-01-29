@@ -59,6 +59,7 @@ public class ClientController {
                     }
                 }));
 
+
                 Timer timer = new Timer();
                 timer.scheduleAtFixedRate(new TimerTask() {
                     @Override
