@@ -71,6 +71,7 @@ public class ClientController {
                                     if (StartElection) {
                                         try {
                                             stubContainer[0].startElection();
+                                            StartElection = false;
                                         } catch (RemoteException e) {
                                             throw new RuntimeException(e);
                                         }
@@ -79,10 +80,10 @@ public class ClientController {
                             }
                         } catch (RemoteException e) {
                             System.err.println("Wystąpił błąd podczas wykonywania operacji: " + e.getMessage());
-                            this.cancel(); // Zatrzymaj timer
+                            this.cancel();
                         }
                     }
-                }, 0, 1000); // Sprawdza co sekundę
+                }, 0, 1000);
 
             } catch (Exception e) {
                 System.err.println("Błąd podczas łączenia z serwerem: " + e);

@@ -1,60 +1,49 @@
 package com.example.srfront;
 
 import javafx.fxml.FXML;
-import javafx.fxml.FXMLLoader;
-import javafx.scene.Parent;
-import javafx.scene.Scene;
 import javafx.scene.control.TextField;
 import javafx.scene.control.TextArea;
-import javafx.stage.Stage;
-
-import java.io.IOException;
+import java.rmi.RemoteException;
 import java.rmi.registry.LocateRegistry;
 import java.rmi.registry.Registry;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ServerController {
     String IP_Server;
     Integer Port;
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    LocalDateTime now = LocalDateTime.now();
+    String formattedDateTime = now.format(formatter);
     @FXML
     private TextField textIPServera;
     @FXML
     private TextField textPort;
     @FXML
-    private TextArea textOutcome;
+    public TextArea textOutcome;
+    private ServerImp serverImp;
 
-    @FXML
-    protected void openNewWindow() {
-        try {
-            FXMLLoader fxmlLoader = new FXMLLoader(getClass().getResource("outcome-view.fxml"));
-            Parent root = fxmlLoader.load();
-
-            Stage stage = new Stage();
-            stage.setTitle("Wyniki");
-            stage.setScene(new Scene(root));
-            stage.show();
-
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public ServerController() throws RemoteException {
     }
 
     @FXML
-    protected void onUruchomButtonClick() {
+    protected void onUruchomButtonClick() throws RemoteException {
+
+
+
         try {
             IP_Server = textIPServera.getText();
             Port = Integer.parseInt(textPort.getText());
             System.setProperty("java.rmi.server.hostname", IP_Server);
 
-            ServerImp obj = new ServerImp();
+            ServerImp obj = new ServerImp(this );
 
             LocateRegistry.createRegistry(Port);
             Registry registry = LocateRegistry.getRegistry();
 
             registry.bind("TyranElection", obj);
 
-            textOutcome.appendText("Serwer RMI gotowy\n");
-
-            openNewWindow();
+            textOutcome.appendText("- " + formattedDateTime + " - Serwer RMI gotowy\n");
 
         } catch (Exception e) {
 

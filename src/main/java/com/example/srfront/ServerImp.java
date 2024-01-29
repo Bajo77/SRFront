@@ -1,25 +1,26 @@
 package com.example.srfront;
 
-import javafx.application.Platform;
-import javafx.fxml.FXML;
-import javafx.scene.control.TextArea;
-
 import java.io.IOException;
 import java.rmi.RemoteException;
 import java.rmi.server.UnicastRemoteObject;
 import java.util.HashMap;
 import java.util.Map;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 
 public class ServerImp extends UnicastRemoteObject implements TyranElection {
-    @FXML
-    private TextArea textOutcome;
+    private ServerController serverController;
+
+    public ServerImp(ServerController serverController) throws RemoteException {
+        super();
+        this.serverController = serverController;
+    }
     private final Map<String, Map<String, Integer>> nodes = new HashMap<>();
     private volatile int leaderId = -1;
     private volatile String leaderName = null;
-
-    public ServerImp() throws RemoteException {
-        super();
-    }
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
+    LocalDateTime now = LocalDateTime.now();
+    String formattedDateTime = now.format(formatter);
 
     private void clear(){
         try {
@@ -35,13 +36,11 @@ public class ServerImp extends UnicastRemoteObject implements TyranElection {
     }
 
     private void printNodes(){
-        clear();
+        //serverController.textOutcome.clear();
 
         nodes.forEach((key, value) -> {
-            System.out.println("Węzeł: " + key);
-            //textOutcome.appendText("Węzeł: " + key + "\n");
-            value.forEach((nodeKey, nodeId) -> System.out.println(" - " + nodeKey + ": " + nodeId));
-            //value.forEach((nodeKey, nodeId) -> textOutcome.appendText(" - " + nodeKey + ": " + nodeId + "\n"));
+            serverController.textOutcome.appendText("- " + formattedDateTime + " - Węzeł: " + key + "\n");
+            value.forEach((nodeKey, nodeId) -> serverController.textOutcome.appendText("                                             - " + nodeKey + ": " + nodeId + "\n"));
         });
     }
 
@@ -58,11 +57,8 @@ public class ServerImp extends UnicastRemoteObject implements TyranElection {
                 entry.getValue().put(name, id);
                 nodes.get(name).put(entry.getKey(), entry.getValue().get(entry.getKey()));
             }
-
             printNodes();
-
         }
-
     }
 
     @Override
@@ -80,18 +76,13 @@ public class ServerImp extends UnicastRemoteObject implements TyranElection {
                     }
                 }
             }
-
-            System.out.println("Wybrany lider to " + leaderName + " z ID: " + leaderId);
-
-            //textOutcome.appendText("Wybrany lider to " + leaderName + " z ID: " + leaderId + "\n");
+            serverController.textOutcome.appendText("- " + formattedDateTime + " - Wybrany lider to " + leaderName + " z ID: " + leaderId + "\n");
         }
     }
 
     @Override
     public int getNodesCount() throws RemoteException {
-
         return this.nodes.size();
-
     }
 
     @Override
@@ -102,13 +93,10 @@ public class ServerImp extends UnicastRemoteObject implements TyranElection {
 
             if (leaderName.equals(name) && nodes.size() > 1) {
                 printNodes();
-                System.out.println("Usunięto węzeł: " + name + ", który był obcenym liderem");
-                //textOutcome.appendText("Usunięto węzeł: " + name + ", który był obcenym liderem" + "\n");
-                System.out.println("Wybieranie nowego lidera!");
-                //textOutcome.appendText("Wybieranie nowego lidera!" + "\n");
+                serverController.textOutcome.appendText("- " + formattedDateTime + " - Usunięto węzeł: " + name + ", który był obcenym liderem" + "\n");
+                serverController.textOutcome.appendText("- " + formattedDateTime + " - Wybieranie nowego lidera!" + "\n");
                 startElection();
             }
         }
     }
-
 }
